@@ -6,10 +6,11 @@ import ProjectCard from '../components/ProjectCard';
 export default function Home() {
   const [homeContent, setHomeContent] = useState(null);
   const [titleIndex, setTitleIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(null);
   const heroTitles = [
-    'Designing Strategic Visual Systems for Brands That Want to Lead',
-    'I Help Brands Speak Visually Through Powerful, Purpose-Driven Design',
-    'From Logos to Interfaces — I Bring Ideas to Life Through Design That Works'
+    'I Design Visual Solutions That Solve Real Business Problems',
+    'Helping Brands Grow Through Purposeful, High-Impact Design',
+    'Strategic Design That Moves People and Grows Businesses'
   ];
 
   useEffect(() => {
@@ -32,33 +33,43 @@ export default function Home() {
     }`).then(setHomeContent);
   }, []);
 
-  // Cycle through hero titles every 2.5 seconds
+  // Cycle through hero titles every 3.5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
+      setPrevIndex(titleIndex);
       setTitleIndex((prev) => (prev + 1) % heroTitles.length);
-    }, 2500);
+    }, 3500);
     return () => clearInterval(interval);
-  }, [heroTitles.length]);
+    // eslint-disable-next-line
+  }, [titleIndex, heroTitles.length]);
 
   if (!homeContent) return <div>Loading...</div>;
   const featuredProjects = homeContent.featuredProjects || [];
+
+  // Calculate minHeight based on the longest title (for layout stability)
+  const minHeight = '7.5rem';
 
   return (
     <div className="pt-12 pb-16">
       {/* Enhanced Animated Hero Section */}
       <div className="flex flex-col items-center justify-center text-center min-h-[40vh] mb-16 pt-16 sm:pt-24">
-        <div className="relative h-[5.5rem] sm:h-[6.5rem] md:h-[7.5rem] flex items-center justify-center w-full">
-          {heroTitles.map((title, idx) => (
+        <div className="relative flex items-center justify-center w-full" style={{ minHeight }}>
+          {prevIndex !== null && prevIndex !== titleIndex && (
             <h1
-              key={idx}
-              className={`absolute left-0 right-0 mx-auto text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg max-w-3xl transition-opacity duration-700 ${
-                idx === titleIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{ transition: 'opacity 0.7s' }}
+              key={prevIndex}
+              className="absolute left-0 right-0 mx-auto text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg max-w-3xl opacity-0 transition-opacity duration-[1200ms]"
+              style={{ transition: 'opacity 1.2s' }}
             >
-              {title}
+              {heroTitles[prevIndex]}
             </h1>
-          ))}
+          )}
+          <h1
+            key={titleIndex}
+            className="absolute left-0 right-0 mx-auto text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg max-w-3xl opacity-100 transition-opacity duration-[1200ms]"
+            style={{ transition: 'opacity 1.2s' }}
+          >
+            {heroTitles[titleIndex]}
+          </h1>
         </div>
         <p className="text-lg sm:text-xl text-zinc-200 animate-fade-slide delay-150 mb-8 max-w-2xl mx-auto leading-relaxed">
           {homeContent.heroSubtitle}
