@@ -47,9 +47,9 @@ export default function Home() {
             loop={0}
             cursor
             cursorStyle="_"
-            typeSpeed={70}
-            deleteSpeed={50}
-            delaySpeed={1800}
+            typeSpeed={40}
+            deleteSpeed={30}
+            delaySpeed={900}
           />
         </h1>
         <p className="text-lg sm:text-xl text-zinc-200 animate-fade-slide delay-150 mb-8 max-w-2xl mx-auto leading-relaxed">
