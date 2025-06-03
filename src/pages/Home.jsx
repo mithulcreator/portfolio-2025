@@ -1,87 +1,77 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { client } from '../sanityClient';
+import { urlFor } from '../sanityImage';
 import ProjectCard from '../components/ProjectCard';
-import { useProjects } from '../hooks/useProjects';
 
 export default function Home() {
-  const { projects, error, loading } = useProjects();
-  const featuredProjects = projects?.slice(0, 3) || [];
+  const [homeContent, setHomeContent] = useState(null);
+  const [featuredProjects, setFeaturedProjects] = useState([]);
 
-  if (loading) {
-    return (
-      <div className="pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-zinc-400 mx-auto"></div>
-            <p className="mt-4 text-zinc-400">Loading projects...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    // Fetch homepage content
+    client.fetch(`*[_type == "homepage"][0]{
+      heroTitle,
+      heroSubtitle,
+      heroImage,
+      ctaText,
+      ctaLink
+    }`).then(setHomeContent);
 
-  if (error) {
-    return (
-      <div className="pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-20">
-            <p className="text-red-400">Error loading projects. Please try again later.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    // Fetch featured projects
+    client.fetch(`*[_type == "project" && featured == true]{
+      _id,
+      title,
+      slug,
+      cover,
+      type,
+      role,
+      tools,
+      timeline
+    }`).then(setFeaturedProjects);
+  }, []);
+
+  if (!homeContent) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="pt-12 pb-16">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="space-y-8">
-              <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white mb-6 tracking-tight">
-                <span className="inline-block transform hover:scale-105 transition-transform duration-300">
-                  Hi, I'm
-                </span>
-                <br />
-                <span className="inline-block transform hover:scale-105 transition-transform duration-300 text-zinc-400">
-                  Mithul
-                </span>
-              </h1>
-              <p className="text-2xl text-zinc-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-                A creative designer and developer passionate about building beautiful, 
-                user-centered digital experiences.
-              </p>
-              <div className="flex justify-center space-x-6">
-                <a
-                  href="/work"
-                  className="group px-8 py-4 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-all duration-300 hover:scale-105"
-                >
-                  View My Work
-                </a>
-                <a
-                  href="/contact"
-                  className="group px-8 py-4 border border-zinc-700 text-zinc-400 rounded-lg hover:bg-zinc-800/50 transition-all duration-300 hover:scale-105"
-                >
-                  Contact Me
-                </a>
-              </div>
-            </div>
+      <div className="relative w-full mb-16">
+        {homeContent.heroImage && (
+          <img
+            src={urlFor(homeContent.heroImage).width(1600).height(500).fit('crop').url()}
+            alt="Hero"
+            className="w-full h-[220px] sm:h-[300px] md:h-[360px] object-cover object-center rounded-2xl shadow-xl"
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="backdrop-blur-xl bg-white/20 dark:bg-zinc-900/40 rounded-2xl shadow-xl px-10 py-8 flex flex-col items-center gap-4 max-w-2xl mx-auto border border-white/30">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center drop-shadow-lg">
+              {homeContent.heroTitle}
+            </h1>
+            <p className="text-lg sm:text-xl text-white text-center">
+              {homeContent.heroSubtitle}
+            </p>
+            {homeContent.ctaText && homeContent.ctaLink && (
+              <Link to={homeContent.ctaLink}>
+                <button className="mt-4 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-lg shadow-lg transition-all">
+                  {homeContent.ctaText}
+                </button>
+              </Link>
+            )}
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Featured Projects */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">
-            Featured Projects
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProjects.map((project, index) => (
-              <ProjectCard key={project._id || index} project={project} />
-            ))}
-          </div>
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-2xl font-bold mb-8">Featured Projects</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featuredProjects.map((project) => (
+            <ProjectCard key={project._id} project={project} />
+          ))}
         </div>
-      </section>
+      </div>
     </div>
   );
 } 
