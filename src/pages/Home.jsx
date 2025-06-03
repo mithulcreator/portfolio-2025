@@ -31,17 +31,17 @@ export default function Home() {
 
   return (
     <div className="pt-12 pb-16">
-      {/* Clean Animated Hero Section */}
+      {/* Enhanced Animated Hero Section */}
       <div className="flex flex-col items-center justify-center text-center min-h-[40vh] mb-16">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white animate-fade-slide mb-4">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-slide mb-6 drop-shadow-lg">
           {homeContent.heroTitle}
         </h1>
-        <p className="text-lg sm:text-xl text-zinc-300 animate-fade-slide delay-150 mb-6">
+        <p className="text-lg sm:text-xl text-zinc-200 animate-fade-slide delay-150 mb-8 max-w-2xl mx-auto leading-relaxed">
           {homeContent.heroSubtitle}
         </p>
         {homeContent.ctaText && homeContent.ctaLink && (
           <Link to={homeContent.ctaLink}>
-            <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-lg shadow-lg transition-all animate-fade-slide delay-300">
+            <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full font-bold text-lg shadow-lg transition-all animate-fade-slide delay-300">
               {homeContent.ctaText}
             </button>
           </Link>
