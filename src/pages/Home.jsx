@@ -55,7 +55,7 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center text-center min-h-[40vh] mb-16 pt-16 sm:pt-24">
         <div className="w-full max-w-3xl mx-auto min-h-[7.5rem] flex items-center justify-center relative">
           <h1
-            className={`text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg transition-opacity duration-[1200ms] ${fade ? 'opacity-100' : 'opacity-0'}`}
+            className={`text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg transition-opacity duration-[1200ms] ${fade ? 'opacity-100' : 'opacity-0'} mb-8`}
             style={{ transition: 'opacity 1.2s' }}
           >
             {heroTitles[titleIndex]}
