@@ -6,32 +6,30 @@ import ProjectCard from '../components/ProjectCard';
 
 export default function Home() {
   const [homeContent, setHomeContent] = useState(null);
-  const [featuredProjects, setFeaturedProjects] = useState([]);
 
   useEffect(() => {
-    // Fetch homepage content
+    // Fetch homepage content with featured projects populated
     client.fetch(`*[_type == "homepage"][0]{
       heroTitle,
       heroSubtitle,
       heroImage,
       ctaText,
-      ctaLink
+      ctaLink,
+      featuredProjects[]-> {
+        _id,
+        title,
+        slug,
+        cover,
+        type,
+        role,
+        tools,
+        timeline
+      }
     }`).then(setHomeContent);
-
-    // Fetch featured projects
-    client.fetch(`*[_type == "project" && featured == true]{
-      _id,
-      title,
-      slug,
-      cover,
-      type,
-      role,
-      tools,
-      timeline
-    }`).then(setFeaturedProjects);
   }, []);
 
   if (!homeContent) return <div>Loading...</div>;
+  const featuredProjects = homeContent.featuredProjects || [];
 
   return (
     <div className="pt-12 pb-16">
