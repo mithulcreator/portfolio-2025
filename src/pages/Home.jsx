@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { client } from '../sanityClient';
 import ProjectCard from '../components/ProjectCard';
+import { Typewriter } from 'react-simple-typewriter';
 
 export default function Home() {
   const [homeContent, setHomeContent] = useState(null);
@@ -29,12 +30,27 @@ export default function Home() {
   if (!homeContent) return <div>Loading...</div>;
   const featuredProjects = homeContent.featuredProjects || [];
 
+  // Animated hero titles
+  const heroTitles = [
+    'Designing Strategic Visual Systems for Brands That Want to Lead',
+    'I Help Brands Speak Visually Through Powerful, Purpose-Driven Design',
+    'From Logos to Interfaces — I Bring Ideas to Life Through Design That Works'
+  ];
+
   return (
     <div className="pt-12 pb-16">
       {/* Enhanced Animated Hero Section */}
       <div className="flex flex-col items-center justify-center text-center min-h-[40vh] mb-16 pt-16 sm:pt-24">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-slide mb-6 drop-shadow-lg max-w-3xl mx-auto">
-          {homeContent.heroTitle}
+          <Typewriter
+            words={heroTitles}
+            loop={0}
+            cursor
+            cursorStyle="_"
+            typeSpeed={70}
+            deleteSpeed={50}
+            delaySpeed={1800}
+          />
         </h1>
         <p className="text-lg sm:text-xl text-zinc-200 animate-fade-slide delay-150 mb-8 max-w-2xl mx-auto leading-relaxed">
           {homeContent.heroSubtitle}
