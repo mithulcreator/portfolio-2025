@@ -9,34 +9,29 @@ export default function AnimatedBlobs() {
     let animationFrameId;
     let blobs = [];
 
-    // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
 
-    // Create blobs
     class Blob {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 300 + 100;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.color = `rgba(${Math.random() * 50 + 100}, ${Math.random() * 50 + 100}, ${Math.random() * 50 + 200}, 0.1)`;
+        this.size = Math.random() * 100 + 50;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = Math.random() * 2 - 1;
+        this.color = `rgba(99, 102, 241, ${Math.random() * 0.1 + 0.05})`;
       }
 
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        // Bounce off edges
-        if (this.x < -this.size) this.x = canvas.width + this.size;
         if (this.x > canvas.width + this.size) this.x = -this.size;
-        if (this.y < -this.size) this.y = canvas.height + this.size;
+        if (this.x < -this.size) this.x = canvas.width + this.size;
         if (this.y > canvas.height + this.size) this.y = -this.size;
+        if (this.y < -this.size) this.y = canvas.height + this.size;
       }
 
       draw() {
@@ -47,12 +42,13 @@ export default function AnimatedBlobs() {
       }
     }
 
-    // Initialize blobs
-    for (let i = 0; i < 3; i++) {
-      blobs.push(new Blob());
-    }
+    const init = () => {
+      blobs = [];
+      for (let i = 0; i < 5; i++) {
+        blobs.push(new Blob());
+      }
+    };
 
-    // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -63,9 +59,16 @@ export default function AnimatedBlobs() {
 
       animationFrameId = requestAnimationFrame(animate);
     };
+
+    resizeCanvas();
+    init();
     animate();
 
-    // Cleanup
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      init();
+    });
+
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
@@ -75,8 +78,8 @@ export default function AnimatedBlobs() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full -z-10"
-      style={{ background: 'transparent' }}
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ opacity: 0.5 }}
     />
   );
 } 
