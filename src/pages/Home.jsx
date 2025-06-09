@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { client } from '../sanityClient';
 import ProjectCard from '../components/ProjectCard';
+import AnimatedBlobs from '../components/AnimatedBlobs';
 
 export default function Home() {
   const [homeContent, setHomeContent] = useState(null);
+  const [error, setError] = useState(null);
   const [titleIndex, setTitleIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const heroTitles = [
@@ -30,7 +32,15 @@ export default function Home() {
         tools,
         timeline
       }
-    }`).then(setHomeContent);
+    }`)
+    .then(data => {
+      console.log('Fetched data:', data);
+      setHomeContent(data);
+    })
+    .catch(err => {
+      console.error('Error fetching data:', err);
+      setError(err.message);
+    });
   }, []);
 
   // Fade out, change title, then fade in
@@ -46,11 +56,13 @@ export default function Home() {
     };
   }, [titleIndex, heroTitles.length]);
 
-  if (!homeContent) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+  if (!homeContent) return <div className="text-white p-4">Loading...</div>;
   const featuredProjects = homeContent.featuredProjects || [];
 
   return (
     <div className="pt-12 pb-16">
+      <AnimatedBlobs />
       {/* Enhanced Animated Hero Section */}
       <div className="flex flex-col items-center justify-center text-center min-h-[40vh] mb-16 pt-16 sm:pt-24">
         <div className="w-full max-w-3xl mx-auto min-h-[7.5rem] flex items-center justify-center relative">
