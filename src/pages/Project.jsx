@@ -21,6 +21,7 @@ export default function Project() {
   const [project, setProject] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const sectionRefs = useRef({});
+  const [activeSection, setActiveSection] = useState('overview');
 
   useEffect(() => {
     client.fetch(`*[_type == "project" && slug.current == $slug][0]{
@@ -46,6 +47,22 @@ export default function Project() {
       afterImg
     }`, { slug }).then(setProject);
   }, [slug]);
+
+  // Scroll spy for active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const offsets = Object.entries(sectionRefs.current).map(([id, el]) => {
+        if (!el) return { id, top: Infinity };
+        const rect = el.getBoundingClientRect();
+        return { id, top: Math.abs(rect.top - 120) }; // 120px offset for sticky nav
+      });
+      offsets.sort((a, b) => a.top - b.top);
+      if (offsets[0]) setActiveSection(offsets[0].id);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [project]);
 
   if (!project) return <div className="text-center py-20">Project not found.</div>;
 
@@ -193,7 +210,7 @@ export default function Project() {
             <FaCheckCircle className="text-blue-400 text-lg" />
             <h2 className="text-xl font-bold text-white">Outcome</h2>
           </div>
-          <p className="text-zinc-200">{project.outcome}</p>
+          <p className="text-zinc-200 font-semibold bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg px-2 py-1 border border-blue-500/40 shadow-lg">{project.outcome}</p>
         </>
       ),
     },
@@ -263,14 +280,14 @@ export default function Project() {
       </div>
 
       {/* Section Navigation */}
-      <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
+      <nav className="sticky top-4 z-30 bg-zinc-950/90 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
         {shownSections.map((section, i) => {
           const sec = SECTIONS.find(s => s.id === section.id);
           return (
             <button
               key={section.id}
-              onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
+              onClick={() => sectionRefs.current[section.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${activeSection === section.id ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white border-blue-500 shadow-lg' : 'bg-white/10 text-zinc-200 border-zinc-700 hover:bg-blue-500/10'}`}
             >
               {sec.icon} {sec.label}
             </button>
@@ -280,7 +297,7 @@ export default function Project() {
 
       {/* Masonry/Bento Grid */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2 md:px-8 xl:px-24"
         style={{ gridAutoFlow: 'dense' }}
       >
         {shownSections.map((section, i) => (
@@ -288,7 +305,7 @@ export default function Project() {
             key={section.id}
             ref={el => sectionRefs.current[section.id] = el}
             id={section.id}
-            className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
+            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl ${section.id === 'outcome' ? 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-zinc-900' : ''}`}
           >
             {section.content}
           </section>
