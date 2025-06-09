@@ -26,9 +26,30 @@ export default function ProjectCard({ project }) {
               </div>
             </div>
           )}
+          {/* Overlay on hover */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-zinc-900/60 backdrop-blur-sm">
+            <div className="text-center px-4">
+              <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">{project.title}</h3>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <span className="text-sm font-medium text-blue-400">{project.category}</span>
+                {project.type && (
+                  <span className="text-sm text-zinc-400">•</span>
+                )}
+                {project.type && (
+                  <span className="text-sm text-zinc-400">{project.type.join(', ')}</span>
+                )}
+              </div>
+              <Link
+                to={`/project/${project.slug.current}`}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all"
+                onClick={e => e.stopPropagation()}
+              >
+                View Details <FaArrowRight />
+              </Link>
+            </div>
+          </div>
         </div>
-
-        {/* Content */}
+        {/* Content (hidden on overlay) */}
         <div className="p-6">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm font-medium text-blue-400">{project.category}</span>
