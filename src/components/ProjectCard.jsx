@@ -49,36 +49,7 @@ export default function ProjectCard({ project }) {
             </div>
           </div>
         </div>
-        {/* Content (hidden on overlay) */}
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-blue-400">{project.category}</span>
-            {project.type && (
-              <span className="text-sm text-zinc-400">•</span>
-            )}
-            {project.type && (
-              <span className="text-sm text-zinc-400">{project.type.join(', ')}</span>
-            )}
-          </div>
-          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-            {project.title}
-          </h3>
-          {project.role && (
-            <p className="text-zinc-400 text-sm mb-2">Role: {project.role}</p>
-          )}
-          {project.tools && project.tools.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {project.tools.map((tool, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 text-xs font-medium bg-zinc-700 text-zinc-300 rounded-full transition-colors duration-300 group-hover:bg-blue-500/20 group-hover:text-blue-400"
-                >
-                  {tool}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Hide all details below image (no content section) */}
       </div>
     </Link>
   );
