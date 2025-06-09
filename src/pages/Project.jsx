@@ -93,9 +93,9 @@ export default function Project() {
           </div>
           {project.gallery && project.gallery.length === 1 ? (
             <img
-              src={urlFor(project.gallery[0]).width(800).height(400).fit('crop').url()}
+              src={urlFor(project.gallery[0]).width(1200).height(700).fit('crop').url()}
               alt={project.gallery[0].alt || project.title}
-              className="rounded-xl shadow-lg w-full max-w-xl h-[240px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300 mx-auto"
+              className="rounded-xl shadow-lg w-full max-w-3xl h-[350px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300 mx-auto"
               onClick={() => setLightboxIndex(0)}
             />
           ) : (
@@ -103,9 +103,9 @@ export default function Project() {
               {project.gallery && project.gallery.map((img, idx) => (
                 <img
                   key={idx}
-                  src={urlFor(img).width(600).height(340).fit('crop').url()}
+                  src={urlFor(img).width(900).height(600).fit('crop').url()}
                   alt={img.alt || project.title}
-                  className="rounded-xl shadow-md min-w-[320px] h-[200px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
+                  className="rounded-xl shadow-md min-w-[220px] sm:min-w-[320px] md:min-w-[420px] h-[220px] sm:h-[260px] md:h-[320px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
                   onClick={() => setLightboxIndex(idx)}
                 />
               ))}
