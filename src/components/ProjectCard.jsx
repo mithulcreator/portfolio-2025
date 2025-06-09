@@ -6,10 +6,10 @@ export default function ProjectCard({ project }) {
   const hasVideo = project.content?.some(item => item._type === 'file' && item.asset?.mimeType?.startsWith('video/'));
   
   return (
-    <Link to={`/project/${project.slug.current}`} className="group block">
-      <div className="relative overflow-hidden rounded-lg bg-zinc-800 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
+    <Link to={`/project/${project.slug.current}`} className="group block h-80 md:h-96">
+      <div className="relative overflow-hidden rounded-lg bg-zinc-800 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1 h-full flex flex-col">
         {/* Cover Image or Video Thumbnail */}
-        <div className="aspect-w-16 aspect-h-9 relative">
+        <div className="relative flex-1 h-full">
           {project.cover && (
             <img
               src={urlFor(project.cover).url()}
@@ -49,7 +49,6 @@ export default function ProjectCard({ project }) {
             </div>
           </div>
         </div>
-        {/* Hide all details below image (no content section) */}
       </div>
     </Link>
   );
