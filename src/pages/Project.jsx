@@ -99,7 +99,7 @@ export default function Project() {
               onClick={() => setLightboxIndex(0)}
             />
           ) : (
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-400/40 scrollbar-track-transparent hide-scrollbar">
+            <div className="flex gap-4 overflow-x-auto pb-2 custom-gallery-scrollbar hide-scrollbar">
               {project.gallery && project.gallery.map((img, idx) => (
                 <img
                   key={idx}
@@ -318,6 +318,25 @@ export default function Project() {
           </section>
         ))}
       </div>
+
+      {/* Custom scrollbar style for gallery */}
+      <style>{`
+        .custom-gallery-scrollbar::-webkit-scrollbar {
+          height: 12px;
+        }
+        .custom-gallery-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(90deg, #3b82f6 40%, #a78bfa 100%);
+          border-radius: 8px;
+        }
+        .custom-gallery-scrollbar::-webkit-scrollbar-track {
+          background: #18181b;
+          border-radius: 8px;
+        }
+        .custom-gallery-scrollbar {
+          scrollbar-color: #6366f1 #18181b;
+          scrollbar-width: thin;
+        }
+      `}</style>
     </div>
   );
 } 

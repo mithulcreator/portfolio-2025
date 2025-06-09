@@ -25,7 +25,7 @@ export default function Lightbox({ images, activeIndex, onClose }) {
         <img
           src={image.src}
           alt={image.alt}
-          className="w-full h-auto rounded-lg shadow-lg object-contain max-h-[80vh] mx-auto"
+          className="w-full h-auto max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg object-contain mx-auto"
         />
         {image.alt && <div className="text-center text-white mt-4">{image.alt}</div>}
       </div>
