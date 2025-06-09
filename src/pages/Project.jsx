@@ -1,14 +1,26 @@
-import { useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
 import { client } from '../sanityClient';
 import { urlFor } from '../sanityImage';
 import Lightbox from '../components/Lightbox';
-import { FaArrowRight, FaCheckCircle, FaInfoCircle, FaImages, FaExchangeAlt, FaListOl, FaLightbulb, FaGraduationCap } from 'react-icons/fa';
+import { FaArrowRight, FaCheckCircle, FaInfoCircle, FaImages, FaExchangeAlt, FaListOl, FaLightbulb, FaGraduationCap, FaVideo } from 'react-icons/fa';
+
+const SECTIONS = [
+  { id: 'overview', label: 'Overview', icon: <FaInfoCircle /> },
+  { id: 'gallery', label: 'Gallery', icon: <FaImages /> },
+  { id: 'beforeafter', label: 'Before/After', icon: <FaExchangeAlt /> },
+  { id: 'process', label: 'Process', icon: <FaListOl /> },
+  { id: 'solution', label: 'Solution', icon: <FaLightbulb /> },
+  { id: 'outcome', label: 'Outcome', icon: <FaCheckCircle /> },
+  { id: 'learned', label: 'Learned', icon: <FaGraduationCap /> },
+  { id: 'video', label: 'Video', icon: <FaVideo /> },
+];
 
 export default function Project() {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const sectionRefs = useRef({});
 
   useEffect(() => {
     client.fetch(`*[_type == "project" && slug.current == $slug][0]{
@@ -36,6 +48,26 @@ export default function Project() {
   }, [slug]);
 
   if (!project) return <div className="text-center py-20">Project not found.</div>;
+
+  // Helper to scroll to section
+  const scrollToSection = (id) => {
+    const ref = sectionRefs.current[id];
+    if (ref) {
+      ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Build available sections
+  const availableSections = [
+    project.client || project.problem ? 'overview' : null,
+    project.gallery && project.gallery.length > 0 ? 'gallery' : null,
+    project.beforeText || project.afterText || project.beforeImg || project.afterImg ? 'beforeafter' : null,
+    project.process && project.process.length > 0 ? 'process' : null,
+    project.solution ? 'solution' : null,
+    project.outcome ? 'outcome' : null,
+    project.learned ? 'learned' : null,
+    project.video ? 'video' : null,
+  ].filter(Boolean);
 
   const singleGallery = project.gallery && project.gallery.length === 1;
 
@@ -70,193 +102,181 @@ export default function Project() {
         </div>
       </div>
 
-      {/* Modern, auto-balancing bento grid */}
-      {(() => {
-        const cards = [];
-        let cardCount = 0;
-        // Overview
-        if (project.client || project.problem) {
-          cards.push(
-            <div key="overview" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-2">
-                <FaInfoCircle className="text-blue-400 text-lg" />
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Overview</h2>
-              </div>
-              <div className="text-lg text-gray-700 dark:text-gray-200 font-semibold mb-2">{project.client}</div>
-              <div className="text-base text-gray-500 dark:text-gray-400 mb-2">{project.problem}</div>
-            </div>
+      {/* Section Navigation */}
+      <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg">
+        {availableSections.map((id) => {
+          const section = SECTIONS.find(s => s.id === id);
+          return (
+            <button
+              key={id}
+              onClick={() => scrollToSection(id)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
+            >
+              {section.icon} {section.label}
+            </button>
           );
-          cardCount++;
-        }
-        // Gallery (featured, spans 2 columns on large screens)
-        if (project.gallery && project.gallery.length > 0) {
-          cards.push(
-            <div key="gallery" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col justify-center lg:col-span-2 transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaImages className="text-purple-400 text-lg" />
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gallery</h2>
+        })}
+      </nav>
+
+      {/* Single Column Sections */}
+      <div className="flex flex-col gap-8">
+        {/* Overview */}
+        {(project.client || project.problem) && (
+          <section ref={el => sectionRefs.current['overview'] = el} id="overview" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <FaInfoCircle className="text-blue-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Overview</h2>
+            </div>
+            <div className="text-lg text-blue-300 font-semibold mb-2">{project.client}</div>
+            <div className="text-base text-zinc-300 mb-2">{project.problem}</div>
+          </section>
+        )}
+        {/* Gallery */}
+        {project.gallery && project.gallery.length > 0 && (
+          <section ref={el => sectionRefs.current['gallery'] = el} id="gallery" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaImages className="text-purple-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Gallery</h2>
+            </div>
+            {singleGallery ? (
+              <img
+                src={urlFor(project.gallery[0]).width(800).height(400).fit('crop').url()}
+                alt={project.gallery[0].alt || project.title}
+                className="rounded-xl shadow-lg w-full max-w-xl h-[240px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300 mx-auto"
+                onClick={() => setLightboxIndex(0)}
+              />
+            ) : (
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-400/40 scrollbar-track-transparent hide-scrollbar">
+                {project.gallery.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={urlFor(img).width(600).height(340).fit('crop').url()}
+                    alt={img.alt || project.title}
+                    className="rounded-xl shadow-md min-w-[320px] h-[200px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
+                    onClick={() => setLightboxIndex(idx)}
+                  />
+                ))}
               </div>
-              {singleGallery ? (
-                <img
-                  src={urlFor(project.gallery[0]).width(800).height(400).fit('crop').url()}
-                  alt={project.gallery[0].alt || project.title}
-                  className="rounded-xl shadow-lg w-full max-w-xl h-[240px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300 mx-auto"
-                  onClick={() => setLightboxIndex(0)}
-                />
-              ) : (
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-400/40 scrollbar-track-transparent hide-scrollbar">
-                  {project.gallery.map((img, idx) => (
+            )}
+            <Lightbox
+              images={project.gallery.map(img => ({ src: urlFor(img).url(), alt: img.alt || project.title }))}
+              activeIndex={lightboxIndex}
+              onClose={() => setLightboxIndex(null)}
+            />
+          </section>
+        )}
+        {/* Before/After */}
+        {(project.beforeText || project.afterText || project.beforeImg || project.afterImg) && (
+          <section ref={el => sectionRefs.current['beforeafter'] = el} id="beforeafter" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaExchangeAlt className="text-pink-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Before / After</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Before / Challenge */}
+              {(project.beforeText || project.beforeImg) && (
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-2xl">⏮️</span>
+                    <h2 className="text-lg font-bold text-white">Before / Challenge</h2>
+                  </div>
+                  {project.beforeImg && (
                     <img
-                      key={idx}
-                      src={urlFor(img).width(600).height(340).fit('crop').url()}
-                      alt={img.alt || project.title}
-                      className="rounded-xl shadow-md min-w-[320px] h-[200px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
-                      onClick={() => setLightboxIndex(idx)}
+                      src={urlFor(project.beforeImg).width(500).height(300).fit('crop').url()}
+                      alt="Before"
+                      className="rounded-lg shadow mb-4 w-full object-cover max-h-48"
                     />
-                  ))}
+                  )}
+                  {project.beforeText && (
+                    <p className="text-zinc-300 text-center">{project.beforeText}</p>
+                  )}
                 </div>
               )}
-              <Lightbox
-                images={project.gallery.map(img => ({ src: urlFor(img).url(), alt: img.alt || project.title }))}
-                activeIndex={lightboxIndex}
-                onClose={() => setLightboxIndex(null)}
-              />
-            </div>
-          );
-          cardCount += 2; // spans 2 columns
-        }
-        // Before/After
-        if (project.beforeText || project.afterText || project.beforeImg || project.afterImg) {
-          cards.push(
-            <div key="beforeafter" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col gap-6 lg:col-span-2 transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaExchangeAlt className="text-pink-400 text-lg" />
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Before / After</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Before / Challenge */}
-                {(project.beforeText || project.beforeImg) && (
-                  <div className="flex flex-col items-center">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl">⏮️</span>
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">Before / Challenge</h2>
-                    </div>
-                    {project.beforeImg && (
-                      <img
-                        src={urlFor(project.beforeImg).width(500).height(300).fit('crop').url()}
-                        alt="Before"
-                        className="rounded-lg shadow mb-4 w-full object-cover max-h-48"
-                      />
-                    )}
-                    {project.beforeText && (
-                      <p className="text-gray-700 dark:text-gray-300 text-center">{project.beforeText}</p>
-                    )}
+              {/* After / Result */}
+              {(project.afterText || project.afterImg) && (
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-2xl">⏭️</span>
+                    <h2 className="text-lg font-bold text-white">After / Result</h2>
                   </div>
-                )}
-                {/* After / Result */}
-                {(project.afterText || project.afterImg) && (
-                  <div className="flex flex-col items-center">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl">⏭️</span>
-                      <h2 className="text-lg font-bold text-gray-900 dark:text-white">After / Result</h2>
-                    </div>
-                    {project.afterImg && (
-                      <img
-                        src={urlFor(project.afterImg).width(500).height(300).fit('crop').url()}
-                        alt="After"
-                        className="rounded-lg shadow mb-4 w-full object-cover max-h-48"
-                      />
-                    )}
-                    {project.afterText && (
-                      <p className="text-gray-700 dark:text-gray-300 text-center">{project.afterText}</p>
-                    )}
-                  </div>
-                )}
-              </div>
+                  {project.afterImg && (
+                    <img
+                      src={urlFor(project.afterImg).width(500).height(300).fit('crop').url()}
+                      alt="After"
+                      className="rounded-lg shadow mb-4 w-full object-cover max-h-48"
+                    />
+                  )}
+                  {project.afterText && (
+                    <p className="text-zinc-300 text-center">{project.afterText}</p>
+                  )}
+                </div>
+              )}
             </div>
-          );
-          cardCount++;
-        }
-        // Process
-        if (project.process && project.process.length > 0) {
-          cards.push(
-            <div key="process" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaListOl className="text-yellow-400 text-lg" />
-                <h2 className="text-lg font-bold text-white dark:text-white">Process</h2>
-              </div>
-              <ol className="space-y-4 list-decimal list-inside">
-                {project.process.map((step, idx) => (
-                  <li key={idx} className="mb-2">
-                    <span className="font-semibold text-blue-400 dark:text-blue-300">{step.step}:</span> <span className="text-white/90 dark:text-white/90">{step.description}</span>
-                  </li>
-                ))}
-              </ol>
+          </section>
+        )}
+        {/* Process */}
+        {project.process && project.process.length > 0 && (
+          <section ref={el => sectionRefs.current['process'] = el} id="process" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaListOl className="text-yellow-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Process</h2>
             </div>
-          );
-          cardCount++;
-        }
-        // Solution
-        if (project.solution) {
-          cards.push(
-            <div key="solution" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaLightbulb className="text-green-400 text-lg" />
-                <h2 className="text-lg font-bold text-white dark:text-white">Solution</h2>
-              </div>
-              <p className="text-white/90 dark:text-white/90">{project.solution}</p>
+            <ol className="space-y-4 list-decimal list-inside">
+              {project.process.map((step, idx) => (
+                <li key={idx} className="mb-2">
+                  <span className="font-semibold text-blue-400">{step.step}:</span> <span className="text-zinc-200">{step.description}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+        {/* Solution */}
+        {project.solution && (
+          <section ref={el => sectionRefs.current['solution'] = el} id="solution" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaLightbulb className="text-green-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Solution</h2>
             </div>
-          );
-          cardCount++;
-        }
-        // Outcome
-        if (project.outcome) {
-          cards.push(
-            <div key="outcome" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaCheckCircle className="text-blue-400 text-lg" />
-                <h2 className="text-lg font-bold text-white dark:text-white">Outcome</h2>
-              </div>
-              <p className="text-white/90 dark:text-white/90">{project.outcome}</p>
+            <p className="text-zinc-200">{project.solution}</p>
+          </section>
+        )}
+        {/* Outcome */}
+        {project.outcome && (
+          <section ref={el => sectionRefs.current['outcome'] = el} id="outcome" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaCheckCircle className="text-blue-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Outcome</h2>
             </div>
-          );
-          cardCount++;
-        }
-        // Learned
-        if (project.learned) {
-          cards.push(
-            <div key="learned" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <div className="flex items-center gap-2 mb-4">
-                <FaGraduationCap className="text-purple-400 text-lg" />
-                <h2 className="text-lg font-bold text-white dark:text-white">Learned</h2>
-              </div>
-              <p className="text-white/90 dark:text-white/90">{project.learned}</p>
+            <p className="text-zinc-200">{project.outcome}</p>
+          </section>
+        )}
+        {/* Learned */}
+        {project.learned && (
+          <section ref={el => sectionRefs.current['learned'] = el} id="learned" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FaGraduationCap className="text-purple-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Learned</h2>
             </div>
-          );
-          cardCount++;
-        }
-        // Video
-        if (project.video) {
-          cards.push(
-            <div key="video" className="bento-card bg-white/20 dark:bg-gray-800/70 rounded-2xl shadow-xl p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/30 dark:hover:bg-gray-800/90 cursor-pointer">
-              <video
-                controls
-                className="w-full rounded-lg my-6 max-h-96"
-                src={project.video}
-              >
-                Your browser does not support the video tag.
-              </video>
+            <p className="text-zinc-200">{project.learned}</p>
+          </section>
+        )}
+        {/* Video */}
+        {project.video && (
+          <section ref={el => sectionRefs.current['video'] = el} id="video" className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-4">
+              <FaVideo className="text-blue-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Video</h2>
             </div>
-          );
-          cardCount++;
-        }
-        // Render the grid
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {cards}
-          </div>
-        );
-      })()}
+            <video
+              controls
+              className="w-full rounded-lg my-6 max-h-96"
+              src={project.video}
+            >
+              Your browser does not support the video tag.
+            </video>
+          </section>
+        )}
+      </div>
     </div>
   );
 } 
