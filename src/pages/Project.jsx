@@ -87,9 +87,21 @@ export default function Project() {
       show: project.gallery && project.gallery.length > 0,
       content: (
         <>
-          <div className="flex items-center gap-2 mb-4">
-            <FaImages className="text-purple-400 text-lg" />
-            <h2 className="text-xl font-bold text-white">Gallery</h2>
+          <div className="flex items-center gap-2 mb-4 justify-between">
+            <div className="flex items-center gap-2">
+              <FaImages className="text-purple-400 text-lg" />
+              <h2 className="text-xl font-bold text-white">Gallery</h2>
+            </div>
+            {project.gallery && project.gallery.length > 1 && (
+              <button
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold shadow hover:scale-105 transition-transform"
+                onClick={() => setLightboxIndex(0)}
+                title="View Full Gallery"
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 8V6a2 2 0 012-2h2m8 0h2a2 2 0 012 2v2m0 8v2a2 2 0 01-2 2h-2m-8 0H6a2 2 0 01-2-2v-2' /></svg>
+                View Full
+              </button>
+            )}
           </div>
           {project.gallery && project.gallery.length === 1 ? (
             <img
