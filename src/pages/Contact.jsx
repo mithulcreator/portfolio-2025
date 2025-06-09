@@ -11,6 +11,16 @@ export default function Contact() {
             I'm currently focusing on building my portfolio and taking on select projects. 
             Feel free to connect with me on social media for updates and future opportunities.
           </p>
+
+          {/* Email Address */}
+          <div className="flex flex-col items-center gap-2 mb-8">
+            <a
+              href="mailto:your@email.com"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow hover:from-blue-600 hover:to-purple-600 transition-all text-base"
+            >
+              <FaEnvelope /> your@email.com
+            </a>
+          </div>
           
           <div className="flex justify-center gap-6 mt-8">
             <a
