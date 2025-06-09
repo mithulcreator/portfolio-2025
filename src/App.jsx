@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import CaseStudy from './pages/CaseStudy';
 import CreativeParticles from './components/CreativeParticles';
 import Testimonials from './pages/Testimonials';
+import Project from './pages/Project';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/work/:slug" element={<CaseStudy />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/testimonials" element={<Testimonials />} />
+                <Route path="/project/:slug" element={<Project />} />
               </Routes>
             </main>
             <Footer />
