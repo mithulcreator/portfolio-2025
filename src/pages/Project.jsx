@@ -1,9 +1,16 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { client } from '../sanityClient';
 import { urlFor } from '../sanityImage';
 import Lightbox from '../components/Lightbox';
 import { FaArrowRight, FaCheckCircle, FaInfoCircle, FaImages, FaExchangeAlt, FaListOl, FaLightbulb, FaGraduationCap, FaVideo } from 'react-icons/fa';
+// Swiper imports
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { EffectCoverflow, Navigation, Pagination } from 'swiper/modules';
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview', icon: <FaInfoCircle /> },
@@ -20,7 +27,6 @@ export default function Project() {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
-  const sectionRefs = useRef({});
 
   useEffect(() => {
     client.fetch(`*[_type == "project" && slug.current == $slug][0]{
@@ -48,14 +54,6 @@ export default function Project() {
   }, [slug]);
 
   if (!project) return <div className="text-center py-20">Project not found.</div>;
-
-  // Helper to scroll to section
-  const scrollToSection = (id) => {
-    const ref = sectionRefs.current[id];
-    if (ref) {
-      ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   // Build available sections
   const sectionData = [
@@ -280,7 +278,7 @@ export default function Project() {
           return (
             <button
               key={section.id}
-              onClick={() => scrollToSection(section.id)}
+              onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
             >
               {sec.icon} {sec.label}
@@ -289,22 +287,41 @@ export default function Project() {
         })}
       </nav>
 
-      {/* Masonry/Bento Grid */}
-      <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        style={{ gridAutoFlow: 'dense' }}
+      {/* Swiper Carousel for Sections */}
+      <Swiper
+        effect="coverflow"
+        grabCursor={true}
+        centeredSlides={true}
+        slidesPerView={1}
+        breakpoints={{
+          640: { slidesPerView: 1 },
+          768: { slidesPerView: 1.2 },
+          1024: { slidesPerView: 1.5 },
+          1280: { slidesPerView: 2 },
+        }}
+        coverflowEffect={{
+          rotate: 0,
+          stretch: 0,
+          depth: 200,
+          modifier: 2.5,
+          slideShadows: false,
+        }}
+        navigation
+        pagination={{ clickable: true }}
+        modules={[EffectCoverflow, Navigation, Pagination]}
+        className="mySwiper"
       >
         {shownSections.map((section, i) => (
-          <section
-            key={section.id}
-            ref={el => sectionRefs.current[section.id] = el}
-            id={section.id}
-            className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
-          >
-            {section.content}
-          </section>
+          <SwiperSlide key={section.id}>
+            <section
+              id={section.id}
+              className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] max-w-xl mx-auto"
+            >
+              {section.content}
+            </section>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </div>
   );
 } 
