@@ -253,6 +253,27 @@ export default function Project() {
 
   return (
     <div className="pt-12 pb-16">
+      {/* Fixed Section Navigation (below Navbar) */}
+      <nav className="fixed top-16 left-0 w-full z-40 bg-zinc-950/95 backdrop-blur border-b border-zinc-800 shadow-lg flex justify-center py-2 px-2">
+        <div className="flex gap-4 max-w-2xl w-full justify-center">
+          {shownSections.map((section, i) => {
+            const sec = SECTIONS.find(s => s.id === section.id);
+            return (
+              <button
+                key={section.id}
+                onClick={() => {
+                  setActiveSection(section.id);
+                  sectionRefs.current[section.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${activeSection === section.id ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white border-blue-500 shadow-lg' : 'bg-white/10 text-zinc-200 border-zinc-700 hover:bg-blue-500/10'}`}
+              >
+                {sec.icon} {sec.label}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+      <div className="h-16" /> {/* Spacer for fixed nav */}
       {/* Project Header */}
       <div className="max-w-4xl mx-auto mb-10 px-4">
         {project.cover && (
@@ -278,22 +299,6 @@ export default function Project() {
           </div>
         </div>
       </div>
-
-      {/* Section Navigation */}
-      <nav className="sticky top-0 z-30 bg-zinc-950/90 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
-        {shownSections.map((section, i) => {
-          const sec = SECTIONS.find(s => s.id === section.id);
-          return (
-            <button
-              key={section.id}
-              onClick={() => sectionRefs.current[section.id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border ${activeSection === section.id ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white border-blue-500 shadow-lg' : 'bg-white/10 text-zinc-200 border-zinc-700 hover:bg-blue-500/10'}`}
-            >
-              {sec.icon} {sec.label}
-            </button>
-          );
-        })}
-      </nav>
 
       {/* Masonry/Bento Grid */}
       <div
