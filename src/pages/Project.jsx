@@ -280,7 +280,7 @@ export default function Project() {
       </div>
 
       {/* Section Navigation */}
-      <nav className="sticky top-4 z-30 bg-zinc-950/90 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
+      <nav className="sticky top-0 z-30 bg-zinc-950/90 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
         {shownSections.map((section, i) => {
           const sec = SECTIONS.find(s => s.id === section.id);
           return (
@@ -305,7 +305,9 @@ export default function Project() {
             key={section.id}
             ref={el => sectionRefs.current[section.id] = el}
             id={section.id}
-            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl ${section.id === 'outcome' ? 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-zinc-900' : ''}`}
+            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl
+              ${section.id === 'outcome' ? 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-zinc-900' : ''}
+              ${section.id === 'overview' && activeSection === 'overview' ? 'ring-2 ring-blue-400/30 ring-offset-2 ring-offset-zinc-900' : ''}`}
           >
             {section.content}
           </section>
