@@ -1,16 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { client } from '../sanityClient';
 import { urlFor } from '../sanityImage';
 import Lightbox from '../components/Lightbox';
 import { FaArrowRight, FaCheckCircle, FaInfoCircle, FaImages, FaExchangeAlt, FaListOl, FaLightbulb, FaGraduationCap, FaVideo } from 'react-icons/fa';
-// Swiper imports
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import { EffectCoverflow, Navigation, Pagination } from 'swiper/modules';
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview', icon: <FaInfoCircle /> },
@@ -27,6 +20,7 @@ export default function Project() {
   const { slug } = useParams();
   const [project, setProject] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const sectionRefs = useRef({});
 
   useEffect(() => {
     client.fetch(`*[_type == "project" && slug.current == $slug][0]{
@@ -240,70 +234,65 @@ export default function Project() {
   // Filter only shown sections
   const shownSections = sectionData.filter(s => s.show);
 
-  // Background image style
-  const bgImage = project.cover ? `url('${urlFor(project.cover).width(1600).height(900).fit('crop').url()}')` : 'none';
-
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center">
-      {/* Fixed Parallax Background */}
-      <div
-        className="fixed inset-0 w-full h-full -z-20 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: bgImage, backgroundAttachment: 'fixed' }}
-        aria-hidden="true"
-      />
-      {/* Dark overlay for readability */}
-      <div className="fixed inset-0 w-full h-full -z-10 bg-black/70 backdrop-blur-sm" aria-hidden="true" />
-
-      {/* Content */}
-      <div className="relative z-10 w-full flex flex-col items-center justify-center min-h-screen">
-        {/* Section Navigation */}
-        <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
-          {shownSections.map((section, i) => {
-            const sec = SECTIONS.find(s => s.id === section.id);
-            return (
-              <button
-                key={section.id}
-                onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
-              >
-                {sec.icon} {sec.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Swiper Carousel for Sections */}
-        <div className="w-full flex flex-col items-center justify-center min-h-[60vh]">
-          <Swiper
-            effect="coverflow"
-            grabCursor={true}
-            centeredSlides={true}
-            slidesPerView={'auto'}
-            spaceBetween={0}
-            coverflowEffect={{
-              rotate: 0,
-              stretch: 0,
-              depth: 200,
-              modifier: 2.5,
-              slideShadows: false,
-            }}
-            navigation
-            pagination={{ clickable: true }}
-            modules={[EffectCoverflow, Navigation, Pagination]}
-            className="mySwiper max-w-5xl mx-auto px-2"
-          >
-            {shownSections.map((section, i) => (
-              <SwiperSlide key={section.id} className="flex justify-center items-center !w-96">
-                <section
-                  id={section.id}
-                  className="bg-zinc-900/80 backdrop-blur-md border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] w-96"
-                >
-                  {section.content}
-                </section>
-              </SwiperSlide>
+    <div className="pt-12 pb-16">
+      {/* Project Header */}
+      <div className="max-w-4xl mx-auto mb-10 px-4">
+        {project.cover && (
+          <img src={urlFor(project.cover).width(1600).height(500).fit('crop').url()} alt={project.title} className="w-full h-[220px] sm:h-[300px] md:h-[360px] object-cover object-center rounded-2xl shadow-xl mb-6" />
+        )}
+        <div className="backdrop-blur-xl bg-zinc-900/80 rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-4 border border-white/10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center drop-shadow-lg">{project.title}</h1>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {project.type && project.type.map((type, idx) => (
+              <span key={idx} className="bg-blue-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                {type}
+              </span>
             ))}
-          </Swiper>
+            {project.role && <span className="bg-white/80 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow">{project.role}</span>}
+            {project.timeline && <span className="bg-white/80 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow">{project.timeline}</span>}
+          </div>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {project.tools && project.tools.map((tool, idx) => (
+              <span key={idx} className="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 px-2 py-1 rounded-full text-xs font-medium shadow">
+                {tool}
+              </span>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Section Navigation */}
+      <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
+        {shownSections.map((section, i) => {
+          const sec = SECTIONS.find(s => s.id === section.id);
+          return (
+            <button
+              key={section.id}
+              onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
+            >
+              {sec.icon} {sec.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Masonry/Bento Grid */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        style={{ gridAutoFlow: 'dense' }}
+      >
+        {shownSections.map((section, i) => (
+          <section
+            key={section.id}
+            ref={el => sectionRefs.current[section.id] = el}
+            id={section.id}
+            className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          >
+            {section.content}
+          </section>
+        ))}
       </div>
     </div>
   );
