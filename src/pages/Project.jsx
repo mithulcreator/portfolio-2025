@@ -311,7 +311,7 @@ export default function Project() {
             ref={el => sectionRefs.current[section.id] = el}
             id={section.id}
             className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl
-              ${section.id === 'gallery' ? 'lg:col-span-2 p-8' : 'p-4'}
+              ${section.id === 'gallery' || section.id === 'beforeafter' ? 'lg:col-span-2 p-8' : 'p-4'}
               ${section.id === 'overview' ? 'max-w-md p-4 text-base' : ''}
               flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl
               ${section.id === 'outcome' ? 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-zinc-900' : ''}
