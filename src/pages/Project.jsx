@@ -87,21 +87,9 @@ export default function Project() {
       show: project.gallery && project.gallery.length > 0,
       content: (
         <>
-          <div className="flex items-center gap-2 mb-4 justify-between">
-            <div className="flex items-center gap-2">
-              <FaImages className="text-purple-400 text-lg" />
-              <h2 className="text-xl font-bold text-white">Gallery</h2>
-            </div>
-            {project.gallery && project.gallery.length > 1 && (
-              <button
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold shadow hover:scale-105 transition-transform"
-                onClick={() => setLightboxIndex(0)}
-                title="View Full Gallery"
-              >
-                <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 8V6a2 2 0 012-2h2m8 0h2a2 2 0 012 2v2m0 8v2a2 2 0 01-2 2h-2m-8 0H6a2 2 0 01-2-2v-2' /></svg>
-                View Full
-              </button>
-            )}
+          <div className="flex items-center gap-2 mb-4">
+            <FaImages className="text-purple-400 text-lg" />
+            <h2 className="text-xl font-bold text-white">Gallery</h2>
           </div>
           {project.gallery && project.gallery.length === 1 ? (
             <img
@@ -314,7 +302,7 @@ export default function Project() {
 
       {/* Masonry/Bento Grid */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2 md:px-8 xl:px-24"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-2 md:px-8 xl:px-24 auto-rows-min"
         style={{ gridAutoFlow: 'dense' }}
       >
         {shownSections.map((section, i) => (
@@ -322,7 +310,10 @@ export default function Project() {
             key={section.id}
             ref={el => sectionRefs.current[section.id] = el}
             id={section.id}
-            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl
+            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl
+              ${section.id === 'gallery' ? 'lg:col-span-2 p-8' : 'p-4'}
+              ${section.id === 'overview' ? 'max-w-md p-4 text-base' : ''}
+              flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl
               ${section.id === 'outcome' ? 'ring-2 ring-blue-500/40 ring-offset-2 ring-offset-zinc-900' : ''}
               ${section.id === 'overview' && activeSection === 'overview' ? 'ring-2 ring-blue-400/30 ring-offset-2 ring-offset-zinc-900' : ''}`}
           >
