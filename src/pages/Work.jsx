@@ -24,8 +24,8 @@ export default function Work() {
       setProjects(data);
       setFilteredProjects(data);
       
-      // Extract unique categories
-      const uniqueCategories = [...new Set(data.map(project => project.category))];
+      // Extract unique categories, filter out empty/null, fallback to []
+      const uniqueCategories = [...new Set(data.map(project => project.category).filter(Boolean))];
       setCategories(uniqueCategories);
     });
   }, []);
@@ -45,7 +45,7 @@ export default function Work() {
         <h1 className="text-4xl font-bold mb-8 text-white">My Work</h1>
         
         {/* Filter Buttons */}
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex flex-wrap gap-4 mb-8 z-10 relative bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2">
           <button
             onClick={() => handleFilter('all')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
@@ -56,6 +56,9 @@ export default function Work() {
           >
             All
           </button>
+          {categories.length === 0 && (
+            <span className="text-zinc-400 text-sm">No categories found</span>
+          )}
           {categories.map((category) => (
             <button
               key={category}

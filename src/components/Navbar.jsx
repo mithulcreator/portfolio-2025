@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import logo from '../assets/logo.png'; // Adjust path if needed
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function Navbar() {
     { path: '/', label: 'Home' },
     { path: '/work', label: 'Work' },
     { path: '/about', label: 'About' },
+    { path: '/testimonials', label: 'Testimonials' },
     { path: '/contact', label: 'Contact' }
   ];
 
@@ -29,7 +31,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-xl font-bold text-white">
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-white">
+            <img src={logo} alt="Logo" className="h-8 w-8 object-contain" />
             Mithul
           </Link>
 
