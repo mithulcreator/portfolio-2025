@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Work from './pages/Work';
 import Contact from './pages/Contact';
-import Project from '@/pages/Project';
+import Project from './pages/Project.jsx';
 import AnimatedBlobs from './components/AnimatedBlobs';
 
 function App() {
