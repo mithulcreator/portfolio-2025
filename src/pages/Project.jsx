@@ -240,88 +240,76 @@ export default function Project() {
   // Filter only shown sections
   const shownSections = sectionData.filter(s => s.show);
 
+  // Background image style
+  const bgImage = project.cover ? `url('${urlFor(project.cover).width(1600).height(900).fit('crop').url()}')` : 'none';
+
   return (
-    <div className="pt-12 pb-16">
-      {/* Hero Section with Glassmorphism Overlay */}
-      <div className="w-full relative mb-8">
-        {project.cover && (
-          <img src={urlFor(project.cover).width(1600).height(500).fit('crop').url()} alt={project.title} className="w-full h-[220px] sm:h-[300px] md:h-[360px] object-cover object-center rounded-2xl shadow-xl" />
-        )}
-        {/* Glassmorphism Overlay Centered */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="backdrop-blur-xl bg-white/20 dark:bg-zinc-900/40 rounded-2xl shadow-xl px-10 py-8 flex flex-col items-center gap-4 max-w-2xl mx-auto border border-white/30">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center drop-shadow-lg">{project.title}</h1>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {project.type && project.type.map((type, idx) => (
-                <span key={idx} className="bg-blue-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
-                  {type}
-                </span>
-              ))}
-              {project.role && <span className="bg-white/80 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow">{project.role}</span>}
-              {project.timeline && <span className="bg-white/80 text-gray-900 text-xs font-semibold px-3 py-1 rounded-full shadow">{project.timeline}</span>}
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {project.tools && project.tools.map((tool, idx) => (
-                <span key={idx} className="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 px-2 py-1 rounded-full text-xs font-medium shadow">
-                  {tool}
-                </span>
-              ))}
-            </div>
-          </div>
+    <div className="relative min-h-screen flex flex-col items-center justify-center">
+      {/* Fixed Parallax Background */}
+      <div
+        className="fixed inset-0 w-full h-full -z-20 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: bgImage, backgroundAttachment: 'fixed' }}
+        aria-hidden="true"
+      />
+      {/* Dark overlay for readability */}
+      <div className="fixed inset-0 w-full h-full -z-10 bg-black/70 backdrop-blur-sm" aria-hidden="true" />
+
+      {/* Content */}
+      <div className="relative z-10 w-full flex flex-col items-center justify-center min-h-screen">
+        {/* Section Navigation */}
+        <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg max-w-2xl mx-auto">
+          {shownSections.map((section, i) => {
+            const sec = SECTIONS.find(s => s.id === section.id);
+            return (
+              <button
+                key={section.id}
+                onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
+              >
+                {sec.icon} {sec.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Swiper Carousel for Sections */}
+        <div className="w-full flex flex-col items-center justify-center min-h-[60vh]">
+          <Swiper
+            effect="coverflow"
+            grabCursor={true}
+            centeredSlides={true}
+            slidesPerView={1}
+            breakpoints={{
+              640: { slidesPerView: 1 },
+              768: { slidesPerView: 1.2 },
+              1024: { slidesPerView: 1.5 },
+              1280: { slidesPerView: 2 },
+            }}
+            coverflowEffect={{
+              rotate: 0,
+              stretch: 0,
+              depth: 200,
+              modifier: 2.5,
+              slideShadows: false,
+            }}
+            navigation
+            pagination={{ clickable: true }}
+            modules={[EffectCoverflow, Navigation, Pagination]}
+            className="mySwiper"
+          >
+            {shownSections.map((section, i) => (
+              <SwiperSlide key={section.id}>
+                <section
+                  id={section.id}
+                  className="bg-zinc-900/80 backdrop-blur-md border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] max-w-xl mx-auto"
+                >
+                  {section.content}
+                </section>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
-
-      {/* Section Navigation */}
-      <nav className="sticky top-16 z-20 bg-zinc-950/80 backdrop-blur rounded-full px-4 py-2 flex gap-4 justify-center mb-10 border border-zinc-800 shadow-lg">
-        {shownSections.map((section, i) => {
-          const sec = SECTIONS.find(s => s.id === section.id);
-          return (
-            <button
-              key={section.id}
-              onClick={() => document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-zinc-200 hover:bg-blue-500/20 transition-colors"
-            >
-              {sec.icon} {sec.label}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Swiper Carousel for Sections */}
-      <Swiper
-        effect="coverflow"
-        grabCursor={true}
-        centeredSlides={true}
-        slidesPerView={1}
-        breakpoints={{
-          640: { slidesPerView: 1 },
-          768: { slidesPerView: 1.2 },
-          1024: { slidesPerView: 1.5 },
-          1280: { slidesPerView: 2 },
-        }}
-        coverflowEffect={{
-          rotate: 0,
-          stretch: 0,
-          depth: 200,
-          modifier: 2.5,
-          slideShadows: false,
-        }}
-        navigation
-        pagination={{ clickable: true }}
-        modules={[EffectCoverflow, Navigation, Pagination]}
-        className="mySwiper"
-      >
-        {shownSections.map((section, i) => (
-          <SwiperSlide key={section.id}>
-            <section
-              id={section.id}
-              className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] max-w-xl mx-auto"
-            >
-              {section.content}
-            </section>
-          </SwiperSlide>
-        ))}
-      </Swiper>
     </div>
   );
 } 
