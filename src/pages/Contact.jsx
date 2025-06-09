@@ -18,7 +18,7 @@ export default function Contact() {
               href="mailto:your@email.com"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow hover:from-blue-600 hover:to-purple-600 transition-all text-base"
             >
-              <FaEnvelope /> your@email.com
+              <FaEnvelope /> mithul.sivasree@gmail.com
             </a>
           </div>
           
