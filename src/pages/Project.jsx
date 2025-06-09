@@ -58,20 +58,6 @@ export default function Project() {
   };
 
   // Build available sections
-  const availableSections = [
-    project.client || project.problem ? 'overview' : null,
-    project.gallery && project.gallery.length > 0 ? 'gallery' : null,
-    project.beforeText || project.afterText || project.beforeImg || project.afterImg ? 'beforeafter' : null,
-    project.process && project.process.length > 0 ? 'process' : null,
-    project.solution ? 'solution' : null,
-    project.outcome ? 'outcome' : null,
-    project.learned ? 'learned' : null,
-    project.video ? 'video' : null,
-  ].filter(Boolean);
-
-  const singleGallery = project.gallery && project.gallery.length === 1;
-
-  // Prepare section data for alternating grid
   const sectionData = [
     {
       id: 'overview',
@@ -96,7 +82,7 @@ export default function Project() {
             <FaImages className="text-purple-400 text-lg" />
             <h2 className="text-xl font-bold text-white">Gallery</h2>
           </div>
-          {singleGallery ? (
+          {project.gallery && project.gallery.length === 1 ? (
             <img
               src={urlFor(project.gallery[0]).width(800).height(400).fit('crop').url()}
               alt={project.gallery[0].alt || project.title}
@@ -105,7 +91,7 @@ export default function Project() {
             />
           ) : (
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-400/40 scrollbar-track-transparent hide-scrollbar">
-              {project.gallery.map((img, idx) => (
+              {project.gallery && project.gallery.map((img, idx) => (
                 <img
                   key={idx}
                   src={urlFor(img).width(600).height(340).fit('crop').url()}
@@ -117,7 +103,7 @@ export default function Project() {
             </div>
           )}
           <Lightbox
-            images={project.gallery.map(img => ({ src: urlFor(img).url(), alt: img.alt || project.title }))}
+            images={project.gallery ? project.gallery.map(img => ({ src: urlFor(img).url(), alt: img.alt || project.title })) : []}
             activeIndex={lightboxIndex}
             onClose={() => setLightboxIndex(null)}
           />
@@ -184,7 +170,7 @@ export default function Project() {
             <h2 className="text-xl font-bold text-white">Process</h2>
           </div>
           <ol className="space-y-4 list-decimal list-inside">
-            {project.process.map((step, idx) => (
+            {project.process && project.process.map((step, idx) => (
               <li key={idx} className="mb-2">
                 <span className="font-semibold text-blue-400">{step.step}:</span> <span className="text-zinc-200">{step.description}</span>
               </li>
@@ -303,14 +289,17 @@ export default function Project() {
         })}
       </nav>
 
-      {/* Bento/Alternating Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Masonry/Bento Grid */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        style={{ gridAutoFlow: 'dense' }}
+      >
         {shownSections.map((section, i) => (
           <section
             key={section.id}
             ref={el => sectionRefs.current[section.id] = el}
             id={section.id}
-            className={`bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl ${i % 2 === 0 ? 'md:col-start-1' : 'md:col-start-2'}`}
+            className="bg-zinc-800 border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             {section.content}
           </section>
