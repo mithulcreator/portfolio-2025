@@ -278,13 +278,8 @@ export default function Project() {
             effect="coverflow"
             grabCursor={true}
             centeredSlides={true}
-            slidesPerView={1}
-            breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 1.2 },
-              1024: { slidesPerView: 1.5 },
-              1280: { slidesPerView: 2 },
-            }}
+            slidesPerView={'auto'}
+            spaceBetween={0}
             coverflowEffect={{
               rotate: 0,
               stretch: 0,
@@ -295,13 +290,13 @@ export default function Project() {
             navigation
             pagination={{ clickable: true }}
             modules={[EffectCoverflow, Navigation, Pagination]}
-            className="mySwiper"
+            className="mySwiper max-w-5xl mx-auto px-2"
           >
             {shownSections.map((section, i) => (
-              <SwiperSlide key={section.id}>
+              <SwiperSlide key={section.id} className="flex justify-center items-center !w-96">
                 <section
                   id={section.id}
-                  className="bg-zinc-900/80 backdrop-blur-md border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] max-w-xl mx-auto"
+                  className="bg-zinc-900/80 backdrop-blur-md border border-zinc-700 rounded-2xl shadow-xl p-6 flex flex-col justify-center min-h-[340px] w-96"
                 >
                   {section.content}
                 </section>
